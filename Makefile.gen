@@ -1,0 +1,88 @@
+# A simple makefile generator by KiSoft, 2010. mailto: kisoft@rambler.ru
+# version: 0.3.12.5
+
+# Project Variables start
+CPP=mingw32-g++.exe
+CC=mingw32-gcc.exe
+LD=mingw32-g++.exe
+#####################以下三个任选其一即可(默认单色)#######################
+## 素简版本
+C_LAGS=-DNULL_COLOR
+## 单色版本
+#C_LAGS=-DSINGLE_COLOR
+## 多彩版本
+#C_LAGS=-DMULTI_COLOR
+###########################################################################
+LIB=ar.exe
+WINDRES=windres.exe
+# Project Variables end
+
+# Target: Release
+
+OBJS_RELEASE=obj\Release\siframe.o obj\Release\sihook.o obj\Release\sisw.o obj\Release\tabctl.o obj\Release\utils.o obj\Release\mdiclient.o
+MSIMG_RELEASE=obj\Release\msimg32.o
+
+TABBAR=bin\Release\sihook.dll
+MSIMG32=bin\Release\msimg32.dll
+
+all: $(TABBAR) $(MSIMG32)
+
+$(MSIMG32):$(MSIMG_RELEASE)
+	@echo Building dynamic library $(MSIMG32)
+	@mingw32-g++.exe $(C_LAGS) -shared -Wl,--output-def=bin\Release\msimg32.dll.def -Wl,--out-implib=bin\Release\libmsimg32.dll.a -Wl,--dll  $(MSIMG_RELEASE)  \
+	-o $(MSIMG32) -s  -luser32 -lgdi32 -lcomctl32 
+
+$(TABBAR): $(OBJS_RELEASE)
+	@echo Building dynamic library $(TABBAR)
+	@mingw32-g++.exe $(C_LAGS) -shared -Wl,--output-def=bin\Release\libsihook.dll.def -Wl,--out-implib=bin\Release\libsihook.dll.a -Wl,--dll  $(OBJS_RELEASE)  \
+	-o $(TABBAR) -s  -luser32 -lgdi32 -lcomctl32 
+	
+obj\Release\msimg32.o: msimg32\msimg32.c
+	@echo Compiling: msimg32.c
+	@mingw32-gcc.exe $(C_LAGS)  -O2 -Wall -DBUILD_DLL     -c msimg32\msimg32.c -o obj\Release\msimg32.o
+	
+	
+obj\Release\siframe.o: siframe.c
+	@echo Compiling: siframe.c
+	@mingw32-gcc.exe $(C_LAGS)  -O2 -Wall -DBUILD_DLL     -c siframe.c -o obj\Release\siframe.o
+
+obj\Release\sihook.o: sihook.c
+	@echo Compiling: sihook.c
+	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c sihook.c -o obj\Release\sihook.o
+
+obj\Release\sisw.o: sisw.c
+	@echo Compiling: sisw.c
+	@mingw32-gcc.exe $(C_LAGS)  -O2 -Wall -DBUILD_DLL     -c sisw.c -o obj\Release\sisw.o
+
+obj\Release\tabctl.o: tabctl.c
+	@echo Compiling: tabctl.c
+	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c tabctl.c -o obj\Release\tabctl.o
+
+obj\Release\utils.o: utils.c
+	@echo Compiling: utils.c
+	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c utils.c -o obj\Release\utils.o
+
+obj\Release\mdiclient.o: mdiclient.c
+	@echo Compiling: mdiclient.c
+	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c mdiclient.c -o obj\Release\mdiclient.o
+
+siframe.c: siframe.h tabctl.h const.h
+
+sihook.c: siframe.h mdiclient.h
+
+mdiclient.c: mdiclient.h sisw.h tabctl.h const.h
+
+tabctl.c: const.h utils.h tabctl.h 
+
+sisw.c: tabctl.h const.h utils.h sisw.h
+
+utils.c: utils.h
+
+.PHONY: clean
+
+clean: 
+	@echo Delete $(OBJS_RELEASE) $(MSIMG_RELEASE) $(TABBAR) $(MSIMG32) 
+	-@del /f $(OBJS_RELEASE) $(MSIMG_RELEASE) $(TABBAR) $(MSIMG32) 
+
+
+
