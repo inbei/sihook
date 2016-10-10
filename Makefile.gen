@@ -15,6 +15,7 @@ C_LAGS=-DNULL_COLOR
 ###########################################################################
 LIB=ar.exe
 WINDRES=windres.exe
+MKDIR=mkdir
 # Project Variables end
 
 # Target: Release
@@ -39,31 +40,38 @@ $(TABBAR): $(OBJS_RELEASE)
 	
 obj\Release\msimg32.o: msimg32\msimg32.c
 	@echo Compiling: msimg32.c
+	@if not exist "obj\Release" $(MKDIR) "obj\Release"
 	@mingw32-gcc.exe $(C_LAGS)  -O2 -Wall -DBUILD_DLL     -c msimg32\msimg32.c -o obj\Release\msimg32.o
 	
 	
 obj\Release\siframe.o: siframe.c
 	@echo Compiling: siframe.c
+	@if not exist "obj\Release" $(MKDIR) "obj\Release"
 	@mingw32-gcc.exe $(C_LAGS)  -O2 -Wall -DBUILD_DLL     -c siframe.c -o obj\Release\siframe.o
 
 obj\Release\sihook.o: sihook.c
 	@echo Compiling: sihook.c
+	@if not exist "obj\Release" $(MKDIR) "obj\Release"
 	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c sihook.c -o obj\Release\sihook.o
 
 obj\Release\sisw.o: sisw.c
 	@echo Compiling: sisw.c
+	@if not exist "obj\Release" $(MKDIR) "obj\Release"
 	@mingw32-gcc.exe $(C_LAGS)  -O2 -Wall -DBUILD_DLL     -c sisw.c -o obj\Release\sisw.o
 
 obj\Release\tabctl.o: tabctl.c
 	@echo Compiling: tabctl.c
+	@if not exist "obj\Release" $(MKDIR) "obj\Release"
 	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c tabctl.c -o obj\Release\tabctl.o
 
 obj\Release\utils.o: utils.c
 	@echo Compiling: utils.c
+	@if not exist "obj\Release" $(MKDIR) "obj\Release"
 	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c utils.c -o obj\Release\utils.o
 
 obj\Release\mdiclient.o: mdiclient.c
 	@echo Compiling: mdiclient.c
+	@if not exist "obj\Release" $(MKDIR) "obj\Release"
 	@mingw32-gcc.exe $(C_LAGS) -O2 -Wall -DBUILD_DLL     -c mdiclient.c -o obj\Release\mdiclient.o
 
 siframe.c: siframe.h tabctl.h const.h
