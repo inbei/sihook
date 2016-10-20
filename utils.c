@@ -13,11 +13,11 @@
 
 
 #define ISSPACE(x)  ((x)==' '||(x)=='\r'||(x)=='\n'||(x)=='\f'||(x)=='\b'||(x)=='\t')
-//ÉèÖÃ½¥±ä²ÎÊı£¬GRADLEVELÔ½Ğ¡£¬ÑÕÉ«½¥±äÔ½Ï¸Äå£¬¹ı¶ÈĞ§¹ûÔ½ºÃ£¬µ«ËÙ¶È±È½ÏÂı
+//è®¾ç½®æ¸å˜å‚æ•°ï¼ŒGRADLEVELè¶Šå°ï¼Œé¢œè‰²æ¸å˜è¶Šç»†è…»ï¼Œè¿‡åº¦æ•ˆæœè¶Šå¥½ï¼Œä½†é€Ÿåº¦æ¯”è¾ƒæ…¢
 #define GRADLEVEL 1
 
 
-//Êä³öµ÷ÊÔĞÅÏ¢
+//è¾“å‡ºè°ƒè¯•ä¿¡æ¯
 void WINAPI OutputDebugStringEx(LPCTSTR lpcFormatText, ...)
 {
     char szBuffer[1024];
@@ -30,49 +30,44 @@ void WINAPI OutputDebugStringEx(LPCTSTR lpcFormatText, ...)
     OutputDebugString(szBuffer);
 }
 
-//»ñÈ¡¶Ì±êÌâ
+//è·å–çŸ­æ ‡é¢˜
 char* GetSiSwTitle(const char* lpc, char* title, char* path)
 {
     int i, len;
-    int skip_flag;
-    int index , pindex;
-    skip_flag = 0;
-    i = index = pindex =  0;
+    int skip_flag, skip_first;
+    int index, pindex;
+    skip_flag = skip_first= 0;
+    i = index = pindex = 0;
     len = strlen(lpc);
 
-    while(i < len)
-    {
-
-        if(lpc[i] == ')')
-        {
+    while(i < len) {
+        if(lpc[i] == ')' && strrchr(lpc, ')') - lpc == i ) {
             skip_flag = 0;
             i++;
             continue;
         }
 
-        if(skip_flag == 0)
-        {
+        if(skip_flag == 0) {
             title[index++] = lpc[i];
         }
-        if(skip_flag == 1)
-        {
-            if ( path != NULL)
+        if(skip_flag == 1) {
+            if(path != NULL)
                 path[pindex++] = lpc[i];
         }
 
-        if(lpc[i] == '(')
-        {
+        if(lpc[i] == '(' && skip_first == 0) {
             index--;
             skip_flag = 1;
+            skip_first++;
         }
 
         i++;
     }
     title[index] = '\0';
-    if ( path != NULL)
-    {
+    if(path != NULL) {
         path[pindex] = '\0';
     }
+
     return title;
 }
 
@@ -95,8 +90,8 @@ static const char* strstri(const char* str, const char* subStr)
     return NULL;
 }
 
-//»ñÈ¡ÎÄ¼şÀàĞÍ
-//0 ÎŞÀàĞÍÄ¬ÈÏ
+//è·å–æ–‡ä»¶ç±»å‹
+//0 æ— ç±»å‹é»˜è®¤
 //1 *.c *.cpp *.cxx *.cs
 //2 *.h *.hpp *.hxx *.inc
 //3 *.txt *.text *.doc
@@ -211,11 +206,11 @@ char* GetRealTime(char* vo_pBuffer)
 
 
 /****************************************************************************
-»æÖÆ´¹Ö±ÑÕÉ«½¥±äÇøÓò
-DrawGradientV(HDC hdc            //»æÍ¼Ë¢×Ó
-                COLORREF co1    //¶¥¶ËÑÕÉ«
-                COLORREF co2    //µÍ¶ËÑÕÉ«
-                RECT& DrawRect)    //ÑÕÉ«½¥±äÇøÓò
+ç»˜åˆ¶å‚ç›´é¢œè‰²æ¸å˜åŒºåŸŸ
+DrawGradientV(HDC hdc            //ç»˜å›¾åˆ·å­
+                COLORREF co1    //é¡¶ç«¯é¢œè‰²
+                COLORREF co2    //ä½ç«¯é¢œè‰²
+                RECT& DrawRect)    //é¢œè‰²æ¸å˜åŒºåŸŸ
 ****************************************************************************/
 void DrawGradientV(HDC hdc, COLORREF co1, COLORREF co2, RECT DrawRect )
 {
@@ -227,58 +222,58 @@ void DrawGradientV(HDC hdc, COLORREF co1, COLORREF co2, RECT DrawRect )
     int g2 = GetGValue(co2);
     int b2 = GetBValue(co2);
 
-    //¼ÆËã¿í,¸ß
+    //è®¡ç®—å®½,é«˜
     int DrawRectWidth = DrawRect.right - DrawRect.left;
     int DrawRectHeight = DrawRect.bottom - DrawRect.top;
 
     if ( DrawRectWidth <= 0)
         return;
 
-    //³õÊ¼»¯rect
+    //åˆå§‹åŒ–rect
     RECT rect = {0, 0, DrawRectWidth, GRADLEVEL};
 
-    //×¼±¸GDI
-    HDC hMemDC = CreateCompatibleDC(hdc);              //´´½¨ÄÚ´æDC
-    HBITMAP hBitmap = CreateCompatibleBitmap(hdc, DrawRectWidth, DrawRectHeight); //´´½¨Î»Í¼
-    SelectObject(hMemDC, hBitmap);       //°ÑÎ»Í¼Ñ¡½øÄÚ´æDC
+    //å‡†å¤‡GDI
+    HDC hMemDC = CreateCompatibleDC(hdc);              //åˆ›å»ºå†…å­˜DC
+    HBITMAP hBitmap = CreateCompatibleBitmap(hdc, DrawRectWidth, DrawRectHeight); //åˆ›å»ºä½å›¾
+    SelectObject(hMemDC, hBitmap);       //æŠŠä½å›¾é€‰è¿›å†…å­˜DC
     HBRUSH hbr;
 
     int i = 0;
     for(i = DrawRectHeight; i > 0; i -= GRADLEVEL )
     {
-        //´´½¨Ë¢×Ó
+        //åˆ›å»ºåˆ·å­
         hbr = CreateSolidBrush( RGB( r, g, b ) );
         FillRect( hMemDC, &rect, hbr );
         DeleteObject( hbr );
 
-        //¸Ä±äĞ¡Õı·½ÌåµÄÎ»ÖÃ
+        //æ”¹å˜å°æ­£æ–¹ä½“çš„ä½ç½®
         rect.top += GRADLEVEL;
         rect.bottom += GRADLEVEL;
 
-        //ÅĞ¶ÏĞ¡Õı·½ÌåÊÇ·ñ³¬½ç
+        //åˆ¤æ–­å°æ­£æ–¹ä½“æ˜¯å¦è¶…ç•Œ
         if( rect.bottom > DrawRect.bottom )
             rect.bottom = DrawRect.bottom;
 
-        //¸Ä±äÑÕÉ«
+        //æ”¹å˜é¢œè‰²
         r += ( r2 - r + i / 2 ) / i * GRADLEVEL;
         g += ( g2 - g + i / 2 ) / i * GRADLEVEL;
         b += ( b2 - b + i / 2 ) / i * GRADLEVEL;
     }
 
-    //ÄÚ´æDCÓ³Éäµ½ÆÁÄ»DC
+    //å†…å­˜DCæ˜ å°„åˆ°å±å¹•DC
     BitBlt(hdc, DrawRect.left, DrawRect.top, DrawRectWidth, DrawRectHeight, hMemDC, 0, 0, SRCCOPY);
 
-    //É¾³ı
+    //åˆ é™¤
     DeleteDC(hMemDC) ;
     DeleteObject(hBitmap);
 }
 
 /****************************************************************************
-»æÖÆË®Æ½ÑÕÉ«½¥±äÇøÓò
-DrawGradientV(    HDC hdc            //»æÍ¼Ë¢×Ó
-                COLORREF co1    //×ó¶ËÑÕÉ«
-                COLORREF co2    //ÓÒ¶ËÑÕÉ«
-                RECT& DrawRect)    //ÑÕÉ«½¥±äÇøÓò
+ç»˜åˆ¶æ°´å¹³é¢œè‰²æ¸å˜åŒºåŸŸ
+DrawGradientV(    HDC hdc            //ç»˜å›¾åˆ·å­
+                COLORREF co1    //å·¦ç«¯é¢œè‰²
+                COLORREF co2    //å³ç«¯é¢œè‰²
+                RECT& DrawRect)    //é¢œè‰²æ¸å˜åŒºåŸŸ
 ****************************************************************************/
 void DrawGradientH( HDC hdc, COLORREF co1, COLORREF co2, RECT DrawRect )
 {
@@ -290,47 +285,47 @@ void DrawGradientH( HDC hdc, COLORREF co1, COLORREF co2, RECT DrawRect )
     int g2 = GetGValue( co2 );
     int b2 = GetBValue( co2 );
 
-    //¼ÆËã¿í,¸ß
+    //è®¡ç®—å®½,é«˜
     int DrawRectWidth = DrawRect.right - DrawRect.left;
     int DrawRectHeight = DrawRect.bottom - DrawRect.top;
 
     if ( DrawRectHeight <= 0)
         return;
 
-    //³õÊ¼»¯rect
+    //åˆå§‹åŒ–rect
     RECT rect = {0, 0, GRADLEVEL, DrawRectHeight};
 
-    //×¼±¸GDI
-    HDC hMemDC = CreateCompatibleDC(hdc);              //´´½¨ÄÚ´æDC
-    HBITMAP hBitmap = CreateCompatibleBitmap(hdc, DrawRectWidth, DrawRectHeight); //´´½¨Î»Í¼
-    SelectObject(hMemDC, hBitmap);       //°ÑÎ»Í¼Ñ¡½øÄÚ´æDC
+    //å‡†å¤‡GDI
+    HDC hMemDC = CreateCompatibleDC(hdc);              //åˆ›å»ºå†…å­˜DC
+    HBITMAP hBitmap = CreateCompatibleBitmap(hdc, DrawRectWidth, DrawRectHeight); //åˆ›å»ºä½å›¾
+    SelectObject(hMemDC, hBitmap);       //æŠŠä½å›¾é€‰è¿›å†…å­˜DC
     HBRUSH hbr;
     int i = 0;
     for(i = DrawRectWidth; i > 0; i -= GRADLEVEL )
     {
-        //´´½¨Ë¢×Ó
+        //åˆ›å»ºåˆ·å­
         hbr = CreateSolidBrush( RGB( r, g, b ) );
         FillRect( hMemDC, &rect, hbr );
         DeleteObject( hbr );
 
-        //¸Ä±äĞ¡Õı·½ÌåµÄÎ»ÖÃ
+        //æ”¹å˜å°æ­£æ–¹ä½“çš„ä½ç½®
         rect.left += GRADLEVEL;
         rect.right += GRADLEVEL;
 
-        //ÅĞ¶ÏĞ¡Õı·½ÌåÊÇ·ñ³¬½ç
+        //åˆ¤æ–­å°æ­£æ–¹ä½“æ˜¯å¦è¶…ç•Œ
         if( rect.right > DrawRect.right )
             rect.right = DrawRect.right;
 
-        //¸Ä±äÑÕÉ«
+        //æ”¹å˜é¢œè‰²
         r += ( r2 - r + i / 2 ) / i * GRADLEVEL;
         g += ( g2 - g + i / 2 ) / i * GRADLEVEL;
         b += ( b2 - b + i / 2 ) / i * GRADLEVEL;
     }
 
-    //ÄÚ´æDCÓ³Éäµ½ÆÁÄ»DC
+    //å†…å­˜DCæ˜ å°„åˆ°å±å¹•DC
     BitBlt(hdc, DrawRect.left, DrawRect.top, DrawRectWidth, DrawRectHeight, hMemDC, 0, 0, SRCCOPY);
 
-    //É¾³ı
+    //åˆ é™¤
     DeleteDC(hMemDC) ;
     DeleteObject(hBitmap);
 }
